@@ -142,7 +142,9 @@ function run(p, inp) {
   }
 }
 
-for (const id of readdirSync(I).sort()) {
+for (const id of readdirSync(I, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort()) {
+  // Only instance directories are read: a stray file in /input must not
+  // crash the whole run (an uncaught throw would leave all 40 unanswered).
   const dir = join(I, id);
   const prog = readFileSync(join(dir, 'program.bin'));
   const inp = existsSync(join(dir, 'input.bin')) ? readFileSync(join(dir, 'input.bin')) : Buffer.alloc(0);
